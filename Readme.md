@@ -1,7 +1,7 @@
 # Личный проект «Кекстаграм» [![Build status][travis-image]][travis-url] [![Dependency status][dependency-image]][dependency-url]
 
 * Студент: [Александр Кислицын](https://up.htmlacademy.ru/javascript/5/user/8539).
-* Наставник: `Неизвестно`.
+* Наставник: `Иван Васильев`.
 
 ---
 
