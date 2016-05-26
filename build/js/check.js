@@ -11,14 +11,14 @@ var bType=typeof b;
   else if (aType=='number') {
     resultString='Переданное SVG-изображение содержит ' + a + ' объектов и ' + (b*4) + ' атрибутов';
   }
-  else if (aType=='object'&&bType!='object') {
+  else if (Array.isArray(a)&&!Array.isArray(b)) {
     var sum = 0;
     for (var i = 0; i < a.length; i++) {
       sum=sum + a[i];
     }
     resultString='Количество красных точек во всех строчках изображения: ' + sum;
   }
-  else if(aType=='object'&&bType=='object') {
+  else if(Array.isArray(a)&&Array.isArray(b)) {
     var square = 0;
     for (var i = 0; i < a.length; i++) {
       square=square + a[i]*b[i];
