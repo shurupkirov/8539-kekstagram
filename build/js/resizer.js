@@ -94,9 +94,9 @@
       this._ctx.strokeStyle = '#ffe753';
       // Размер штрихов. Первый элемент массива задает длину штриха, второй
       // расстояние между соседними штрихами.
-      this._ctx.setLineDash([15, 10]);
+      //this._ctx.setLineDash([15, 10]);
       // Смещение первого штриха от начала линии.
-      this._ctx.lineDashOffset = 7;
+      //this._ctx.lineDashOffset = 7;
 
       // Сохранение состояния канваса.
       // Подробней см. строку 132.
@@ -111,15 +111,128 @@
       // нужно отрисовать и координаты его верхнего левого угла.
       // Координаты задаются от центра холста.
       this._ctx.drawImage(this._image, displX, displY);
-
+      this._ctx.beginPath();
+      this._ctx.fillStyle = 'rgba(0,0,0,0.8)';
+      this._ctx.moveTo(-this._container.width / 2, -this._container.height / 2);
+      this._ctx.lineTo(this._container.width / 2, -this._container.width / 2);
+      this._ctx.lineTo(this._container.width / 2, this._container.width / 2);
+      this._ctx.lineTo(-this._container.width / 2, this._container.width / 2);
+      this._ctx.lineTo(-this._container.width / 2, -this._container.width / 2);
+      this._ctx.moveTo(
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth
+        );
+      this._ctx.lineTo(
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth
+        );
+      this._ctx.lineTo(
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2,
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2
+        );
+      this._ctx.lineTo(
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+          this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2
+        );
+      this._ctx.lineTo(
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth,
+          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth
+        );
+      this._ctx.fill('evenodd');
+      this._ctx.closePath();
       // Отрисовка прямоугольника, обозначающего область изображения после
       // кадрирования. Координаты задаются от центра.
-      this._ctx.strokeRect(
+      /*this._ctx.strokeRect(
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
           this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);
-
+          this._resizeConstraint.side - this._ctx.lineWidth / 2);*/
+      // Отрисовка текста с размером изображения
+      this._ctx.fillStyle = 'white';
+      this._ctx.font = '16px Tahoma';
+      this._ctx.textAlign = 'center';
+      var dispSizeImg = this._image.naturalWidth + 'x' + this._image.naturalHeight;
+      this._ctx.fillText(dispSizeImg, 0, (-this._resizeConstraint.side / 2) - this._ctx.lineWidth * 2);
+      this._ctx.fillStyle = '#ffe753';
+      // Отрисовка прямоугольника, обозначающего область изображения после
+      // кадрирования с помощью точек радиусом 3
+      /*
+      for(var i = 0; i < Math.floor(this._resizeConstraint.side / 12 + 1); i++) {
+        this._ctx.beginPath();
+        this._ctx.arc(
+          (-this._resizeConstraint.side / 2) - 3 + i * 12,
+          (-this._resizeConstraint.side / 2) - 3,
+          3, 0, Math.PI * 2, false);
+        this._ctx.fill();
+        this._ctx.beginPath();
+        this._ctx.arc(
+          (-this._resizeConstraint.side / 2) - 3 + i * 12,
+          (this._resizeConstraint.side / 2) - 3 * 2,
+          3, 0, Math.PI * 2, false);
+        this._ctx.fill();
+        this._ctx.beginPath();
+        this._ctx.arc(
+          (this._resizeConstraint.side / 2) - 3 * 2,
+          (-this._resizeConstraint.side / 2) - 3 + i * 12,
+          3, 0, Math.PI * 2, false);
+        this._ctx.fill();
+        this._ctx.beginPath();
+        this._ctx.arc(
+          (-this._resizeConstraint.side / 2) - 3,
+          (-this._resizeConstraint.side / 2) - 3 + i * 12,
+          3, 0, Math.PI * 2, false);
+        this._ctx.fill();
+      }
+      */
+      // Отрисовка прямоугольника с рамкой зигзагом
+      this._ctx.beginPath();
+      this._ctx.lineWidth = 3;
+      this._ctx.moveTo(-this._resizeConstraint.side / 2 - this._ctx.lineWidth + 10, -this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+      for(var i = 0; i < Math.floor((this._resizeConstraint.side + this._ctx.lineWidth) / 20) - 1; i++) {
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 2)),
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + 10
+          );
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 3)),
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth
+          );
+      }
+      this._ctx.moveTo(this._resizeConstraint.side / 2 - 2 * this._ctx.lineWidth - 10, -this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+      for(i = 0; i < Math.floor((this._resizeConstraint.side + this._ctx.lineWidth) / 20); i++) {
+        this._ctx.lineTo(
+            (this._resizeConstraint.side / 2) - 2 * this._ctx.lineWidth,
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 1))
+          );
+        this._ctx.lineTo(
+            (this._resizeConstraint.side / 2) - 2 * this._ctx.lineWidth - 10,
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 2))
+          );
+      }
+      this._ctx.moveTo(-this._resizeConstraint.side / 2 - this._ctx.lineWidth / 2 + 10, -this._resizeConstraint.side / 2 - this._ctx.lineWidth);
+      for(i = 0; i < Math.floor((this._resizeConstraint.side + this._ctx.lineWidth) / 20); i++) {
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 1))
+          );
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2 + 10,
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 2))
+          );
+      }
+      this._ctx.moveTo(-this._resizeConstraint.side / 2 - this._ctx.lineWidth + 10, this._resizeConstraint.side / 2 - 2 * this._ctx.lineWidth);
+      for(i = 0; i < Math.floor((this._resizeConstraint.side + this._ctx.lineWidth) / 20 - 1); i++) {
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 2)),
+            this._resizeConstraint.side / 2 - 2 * this._ctx.lineWidth - 10
+          );
+        this._ctx.lineTo(
+            (-this._resizeConstraint.side / 2) - this._ctx.lineWidth + (10 * (i * 2 + 3)),
+            this._resizeConstraint.side / 2 - 2 * this._ctx.lineWidth
+          );
+      }
+      this._ctx.stroke();
+      this._ctx.closePath();
       // Восстановление состояния канваса, которое было до вызова ctx.save
       // и последующего изменения системы координат. Нужно для того, чтобы
       // следующий кадр рисовался с привычной системой координат, где точка
