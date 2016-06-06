@@ -66,13 +66,63 @@
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
-
+  /**
+   * Входные данные инпутов формы
+   */
+  var leftPositionImage = document.querySelector('#resize-x');
+  var topPositionImage = document.querySelector('#resize-y');
+  var sideCropImage = document.querySelector('#resize-size');
+  var buttonCropSubmit = document.querySelector('#resize-fwd');
+  var sideCropImageMax;
+  leftPositionImage.min = 0;
+  topPositionImage.min = 0;
+  sideCropImage.min = 1;
+  /**
+   * Проверка введенных данных в инпуты
+   */
+  leftPositionImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+      leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
+    } else {
+      leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+    }
+  };
+  topPositionImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+      topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
+    } else {
+      topPositionImage.max = currentResizer._image.naturalHeight - 1;
+    }
+  };
+  sideCropImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
+      if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
+        sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+      } else {
+        sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+      }
+    } else if (leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
+      sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+    } else if (topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
+      sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+    } else {
+      sideCropImage.max = sideCropImageMax;
+    }
+  };
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    if (leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
+      buttonCropSubmit.disabled = false; return true;
+    } else {
+      buttonCropSubmit.disabled = true; return false;
+    }
+
   }
 
   /**
@@ -158,7 +208,14 @@
 
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
-
+          if (currentResizer._image.naturalWidth > currentResizer._image.naturalHeight) {
+            sideCropImageMax = currentResizer._image.naturalHeight;
+          } else {
+            sideCropImageMax = currentResizer._image.naturalWidth;
+          }
+          sideCropImage.max = sideCropImageMax;
+          leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+          topPositionImage.max = currentResizer._image.naturalHeight - 1;
           hideMessage();
         };
 
