@@ -259,7 +259,7 @@ body {
 }
 
 .upload-resize-controls input:invalid {
-    border: 1px solid red;
+  border: 1px solid red;
 }
 
 .upload-filter-controls {
