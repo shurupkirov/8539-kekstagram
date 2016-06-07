@@ -82,6 +82,7 @@
    */
   leftPositionImage.oninput = function() {
     buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
     if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
       leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
     } else {
@@ -90,6 +91,7 @@
   };
   topPositionImage.oninput = function() {
     buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
     if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
       topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
     } else {
@@ -98,6 +100,7 @@
   };
   sideCropImage.oninput = function() {
     buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
     if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
       if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
         sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
@@ -113,6 +116,12 @@
     }
   };
   /**
+   * @type {HTMLElement}
+   */
+  var submitMessage = document.querySelector('.submit-message');
+
+
+  /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
@@ -120,6 +129,22 @@
     if (leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
       buttonCropSubmit.disabled = false; return true;
     } else {
+      if (leftPositionImage.value === '' && topPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева", "Сверху", "Сторона" не могут быть пустыми';
+      } else if(leftPositionImage.value === '' && topPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сверху" не могут быть пустыми';
+      } else if(leftPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сторона" не могут быть пустыми';
+      } else if (topPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Сверху" и "Сторона" не могут быть пустыми';
+      } else if (leftPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Слева" не может быть пустым';
+      } else if (topPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сверху" не может быть пустым';
+      } else {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сторона" не может быть пустым';
+      }
+      submitMessage.classList.remove('invisible');
       buttonCropSubmit.disabled = true; return false;
     }
 
