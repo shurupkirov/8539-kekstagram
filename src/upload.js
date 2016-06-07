@@ -88,6 +88,10 @@
     } else {
       leftPositionImage.max = currentResizer._image.naturalWidth - 1;
     }
+    if (!leftPositionImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(leftPositionImage);
+      submitMessage.classList.remove('invisible');
+    }
   };
   topPositionImage.oninput = function() {
     buttonCropSubmit.disabled = false;
@@ -96,6 +100,10 @@
       topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
     } else {
       topPositionImage.max = currentResizer._image.naturalHeight - 1;
+    }
+    if (!topPositionImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(topPositionImage);
+      submitMessage.classList.remove('invisible');
     }
   };
   sideCropImage.oninput = function() {
@@ -114,12 +122,28 @@
     } else {
       sideCropImage.max = sideCropImageMax;
     }
+    if (!sideCropImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(sideCropImage);
+      submitMessage.classList.remove('invisible');
+    }
   };
   /**
    * @type {HTMLElement}
    */
   var submitMessage = document.querySelector('.submit-message');
-
+  /**
+   * Проверяет правильноть элемента формы
+   * и возвращает сообщение об ошибке
+   */
+  function resizeInputIsValid(varnameinput) {
+    var messageinput;
+    if (varnameinput.validity.valid) {
+      messageinput = '';
+    } else {
+      messageinput = varnameinput.validationMessage;
+    }
+    return messageinput;
+  }
 
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
