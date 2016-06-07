@@ -197,7 +197,20 @@ body {
 
   background: rgba(255, 231, 83, 0.2) url("../img/icon-arrow.png") center no-repeat;
 }
-
+#resize-fwd:disabled {
+  background-color: #333;
+  background-image: none;
+}
+#resize-fwd:disabled:after {
+  top:10px;
+  content: '!';
+  color:red;
+  font-size: 36px;
+  position: absolute;
+  display: block;
+  width: 42px;
+  height: 42px;
+}
 .upload-resize canvas {
   position: absolute;
   top: 50%;
@@ -243,6 +256,10 @@ body {
 
   border: none;
   border-radius: 2px;
+}
+
+.upload-resize-controls input:invalid {
+  border: 1px solid red;
 }
 
 .upload-filter-controls {
@@ -331,6 +348,28 @@ input[type=radio]:checked + .upload-filter-label {
 .upload-message-container {
   display: inline-block;
 
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
+.submit-message {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 62px;
+  left: 0;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 10px;
+  font-size: 20px;
+  line-height: 569px;
+  text-align: center;
+  color: #ffe753;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.submit-message-container {
+  display: inline-block;
   line-height: 1.2;
   vertical-align: middle;
 }

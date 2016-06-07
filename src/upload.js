@@ -66,13 +66,112 @@
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
+  /**
+   * Входные данные инпутов формы
+   */
+  var leftPositionImage = document.querySelector('#resize-x');
+  var topPositionImage = document.querySelector('#resize-y');
+  var sideCropImage = document.querySelector('#resize-size');
+  var buttonCropSubmit = document.querySelector('#resize-fwd');
+  var sideCropImageMax;
+  leftPositionImage.min = 0;
+  topPositionImage.min = 0;
+  sideCropImage.min = 1;
+  /**
+   * Проверка введенных данных в инпуты
+   */
+  leftPositionImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
+    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+      leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
+    } else {
+      leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+    }
+    if (!leftPositionImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(leftPositionImage);
+      submitMessage.classList.remove('invisible');
+    }
+  };
+  topPositionImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
+    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+      topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
+    } else {
+      topPositionImage.max = currentResizer._image.naturalHeight - 1;
+    }
+    if (!topPositionImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(topPositionImage);
+      submitMessage.classList.remove('invisible');
+    }
+  };
+  sideCropImage.oninput = function() {
+    buttonCropSubmit.disabled = false;
+    submitMessage.classList.add('invisible');
+    if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
+      if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
+        sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+      } else {
+        sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+      }
+    } else if (leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
+      sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+    } else if (topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
+      sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+    } else {
+      sideCropImage.max = sideCropImageMax;
+    }
+    if (!sideCropImage.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(sideCropImage);
+      submitMessage.classList.remove('invisible');
+    }
+  };
+  /**
+   * @type {HTMLElement}
+   */
+  var submitMessage = document.querySelector('.submit-message');
+  /**
+   * Проверяет правильноть элемента формы
+   * и возвращает сообщение об ошибке
+   */
+  function resizeInputIsValid(varnameinput) {
+    var messageinput;
+    if (varnameinput.validity.valid) {
+      messageinput = '';
+    } else {
+      messageinput = varnameinput.validationMessage;
+    }
+    return messageinput;
+  }
 
   /**
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
   function resizeFormIsValid() {
-    return true;
+    if (leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
+      buttonCropSubmit.disabled = false; return true;
+    } else {
+      if (leftPositionImage.value === '' && topPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева", "Сверху", "Сторона" не могут быть пустыми';
+      } else if(leftPositionImage.value === '' && topPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сверху" не могут быть пустыми';
+      } else if(leftPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сторона" не могут быть пустыми';
+      } else if (topPositionImage.value === '' && sideCropImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Сверху" и "Сторона" не могут быть пустыми';
+      } else if (leftPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Слева" не может быть пустым';
+      } else if (topPositionImage.value === '') {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сверху" не может быть пустым';
+      } else {
+        submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сторона" не может быть пустым';
+      }
+      submitMessage.classList.remove('invisible');
+      buttonCropSubmit.disabled = true; return false;
+    }
+
   }
 
   /**
@@ -158,7 +257,14 @@
 
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
-
+          if (currentResizer._image.naturalWidth > currentResizer._image.naturalHeight) {
+            sideCropImageMax = currentResizer._image.naturalHeight;
+          } else {
+            sideCropImageMax = currentResizer._image.naturalWidth;
+          }
+          sideCropImage.max = sideCropImageMax;
+          leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+          topPositionImage.max = currentResizer._image.naturalHeight - 1;
           hideMessage();
         };
 
