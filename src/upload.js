@@ -7,6 +7,25 @@
 
 'use strict';
 
+/** Дата рождения @constant {date} */
+var BIRTHDAY_DATE = new Date('1978', '9', '26');
+
+/*Функция вычисления количества дней с ближайщего дня рождения*/
+function getDayFromBirthday() {
+  var currentDate = new Date();
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+  if (currentDate.getMonth() > BIRTHDAY_DATE.getMonth()) {
+    BIRTHDAY_DATE.setFullYear(currentDate.getFullYear());
+  } else {
+    BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
+  }
+  var lastDayFromBirthday = Math.floor((currentDate - BIRTHDAY_DATE) / (1000 * 60 * 60 * 24));
+}
+
+/** Подключение зависимости библиотеки browser-cookies в переменную
+ */
+var browserCookies = require('browser-cookies');
+
 (function() {
   /** @enum {string} */
   var FileType = {
