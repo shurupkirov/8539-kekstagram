@@ -7,6 +7,30 @@
 
 'use strict';
 
+/** Дата рождения @constant {date} */
+var BIRTHDAY_DATE = new Date('1978', '9', '26');
+
+/*Функция вычисления количества дней с ближайщего дня рождения*/
+function getDayFromBirthday() {
+  var currentDate = new Date();
+  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
+  if (currentDate.getMonth() >= BIRTHDAY_DATE.getMonth()) {
+    if (currentDate.getDate() < BIRTHDAY_DATE.getDate()) {
+      BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
+    } else {
+      BIRTHDAY_DATE.setFullYear(currentDate.getFullYear());
+    }
+  } else {
+    BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
+  }
+  var lastDayFromBirthday = Math.floor((currentDate - BIRTHDAY_DATE) / (1000 * 60 * 60 * 24));
+  return lastDayFromBirthday;
+}
+
+/** Подключение зависимости библиотеки browser-cookies в переменную
+ */
+var browserCookies = require('browser-cookies');
+
 (function() {
   /** @enum {string} */
   var FileType = {
@@ -305,6 +329,10 @@
 
       resizeForm.classList.add('invisible');
       filterForm.classList.remove('invisible');
+      filterImage.className = 'filter-image-preview ' + browserCookies.get('filter');
+      var inputactive = filterForm.querySelector('#upload-' + browserCookies.get('filter'));
+      inputactive.checked = true;
+      console.log(filterImage.className);
     }
   };
 
@@ -358,6 +386,9 @@
     // убрать предыдущий примененный класс. Для этого нужно или запоминать его
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
+    browserCookies.set('filter', filterMap[selectedFilter], {
+      expires: getDayFromBirthday()
+    });
   };
 
   cleanupResizer();
