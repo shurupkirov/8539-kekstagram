@@ -1,7 +1,22 @@
 'use strict';
+/**
+* dataurl - адрес с данными jsonp
+* callBackData - функция кэллбэка
+*/
+function getDataJSP(dataurl, callBackData) {
+  var scripts = document.querySelectorAll('script');
+  var script = document.createElement('script');
+  script.setAttribute('src', dataurl);
+  document.body.insertBefore(script, scripts[0]);
+  window.__picturesLoadCallback = function(data) {
+    callBackData(data);
+  };
+}
 var filterBlock = document.querySelector('.filters');
 filterBlock.classList.add('hidden');
-
+/**
+* таймаут загрузки картинок
+*/
 var IMAGE_LOAD_TIMEOUT = 10000;
 
 var picturesContainer = document.querySelector('.pictures');
@@ -12,6 +27,9 @@ if('content' in templatePicture) {
 } else {
   pictureToClone = templatePicture.querySelector('.picture');
 }
+/*
+* функция клонирования элементов из шаблона
+*/
 var getPictureElement = function(data, container) {
   var element = pictureToClone.cloneNode(true);
   container.appendChild(element);
@@ -33,7 +51,9 @@ var getPictureElement = function(data, container) {
   }, IMAGE_LOAD_TIMEOUT);
   return element;
 };
-window.pictures.forEach(function(picture) {
-  getPictureElement(picture, picturesContainer);
+getDataJSP('//up.htmlacademy.ru/assets/js_intensive/jsonp/pictures.js', function(pictures) {
+  pictures.forEach(function(picture) {
+    getPictureElement(picture, picturesContainer);
+  });
 });
 filterBlock.classList.remove('hidden');
