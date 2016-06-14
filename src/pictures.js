@@ -1,25 +1,21 @@
 'use strict';
-/**
-* dataurl - адрес с данными jsonp
-* callBackData - функция кэллбэка
-*/
-/*
-function getDataJSP(dataurl, callBackData) {
-  var scripts = document.querySelectorAll('script');
-  var script = document.createElement('script');
-  script.setAttribute('src', dataurl);
-  document.body.insertBefore(script, scripts[0]);
-  window.__picturesLoadCallback = function(data) {
-    callBackData(data);
-  };
-}
-*/
+
 /**
 * адрес загрузки данных
 * @constant {string}
 */
 var URL_LOAD_PICTURES = '//o0.github.io/assets/json/pictures.json';
+
+//var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
 var filterBlock = document.querySelector('.filters');
+
+/** @type {Array.<Object>} */
+var pictures = [];
+/** @constant*/
+var CURRENT_DATE = new Date(/*currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()*/);
+/*
+* скрываем при загрузке страницы блок с фильтрами
+*/
 filterBlock.classList.add('hidden');
 /**
 * таймаут загрузки картинок
@@ -35,6 +31,7 @@ if('content' in templatePicture) {
 } else {
   pictureToClone = templatePicture.querySelector('.picture');
 }
+
 /*
 * функция клонирования элементов из шаблона
 */
@@ -59,8 +56,23 @@ var getPictureElement = function(data, container) {
   }, IMAGE_LOAD_TIMEOUT);
   return element;
 };
+
+/**
+* получение массива json, добавление класса загрузки картинок
+* пока запрос выполняется. Если запрос завершился ошибкой
+* или таймаутом - добавляем класс ошибки
+*/
 var getPictures = function(callback) {
   var xhr = new XMLHttpRequest();
+  xhr.timeout = 10000;
+  xhr.ontimeout = function() {
+    picturesContainer.classList.add('pictures-failure');
+    picturesContainer.classList.remove('pictures-loading');
+  };
+  xhr.onerror = function() {
+    picturesContainer.classList.add('pictures-failure');
+    picturesContainer.classList.remove('pictures-loading');
+  };
   picturesContainer.classList.add('pictures-loading');
   xhr.onreadystatechange = function() {
     if(xhr.readyState === 4) {
@@ -74,13 +86,93 @@ var getPictures = function(callback) {
   xhr.open('GET', URL_LOAD_PICTURES);
   xhr.send();
 };
-var renderPictures = function(pictures) {
-  pictures.forEach(function(picture) {
+
+/**
+* отрисовываем полученные данные в соответствии с template
+*/
+var renderPictures = function(picturesar) {
+  picturesContainer.innerHTML = '';
+  picturesar.forEach(function(picture) {
     getPictureElement(picture, picturesContainer);
   });
 };
+
+/**
+* фильтрация данныех согласно правилам
+*/
+var getFilteredPictures = function(picturesar, filter) {
+  var picturesToFilter = picturesar.slice(0);
+  switch(filter) {
+    case 'filter-popular':
+      break;
+    case 'filter-new':
+      for (var i = 0; i < picturesToFilter.length; i++) {
+        var datePictures = new Date(picturesToFilter[i].date);
+        if(datePictures < CURRENT_DATE - 4 * 24 * 60 * 60 * 1000) {
+          picturesToFilter.splice(i, 1);
+        }
+      }
+      picturesToFilter.sort(function(a, b) {
+        var dateA = new Date(a.date);
+        var dateB = new Date(b.date);
+        return dateB - dateA;
+      });
+      break;
+    case 'filter-discussed':
+      picturesToFilter.sort(function(a, b) {
+        return a.comments - b.comments;
+      });
+      break;
+  }
+  return picturesToFilter;
+};
+
+/**
+* установка checked радиобаттонам для отрисовки активного фильтра
+*/
+var setFilterPicture = function(filter) {
+  var filteredPictures = getFilteredPictures(pictures, filter);
+  renderPictures(filteredPictures);
+  var activeFilter = filterBlock.checked;
+  if(activeFilter) {
+    activeFilter.checked = false;
+  }
+  var filterToActive = document.getElementById(filter);
+  filterToActive.checked = true;
+};
+
+/**
+* выбор по клику активного фильтра из массива кнопок формы фильтров
+*/
+var setFilterPictures = function() {
+  var filters = filterBlock.querySelectorAll('.filters-radio');
+  for (var i = 0; i < filters.length; i++) {
+    var count = setCountFilterPictures(filters[i].id);
+    if(count <= 0) {
+      filters.classList.add = 'filter-disabled';
+    }
+    filters[i].onclick = function() {
+      setFilterPicture(this.id);
+    };
+  }
+};
+/**
+* функция простановки sup с количеством элементов фильтра
+*/
+var setCountFilterPictures = function(filter) {
+  var filteredPictures = getFilteredPictures(pictures, filter);
+  var sawCountFilter = document.createElement('sup');
+  sawCountFilter.innerHTML = filteredPictures.length;
+  var currentFilter = filterBlock.querySelector('input' + '#' + filter + '~label');
+  currentFilter.outerHTML = currentFilter.outerHTML + sawCountFilter.outerHTML;
+  return filteredPictures.length;
+};
+
 getPictures(function(loadedPictures) {
-  var pictures = loadedPictures;
-  renderPictures(pictures);
+  pictures = loadedPictures;
+  console.log(pictures);
+//  renderPictures(pictures);
+  setFilterPictures(true);
+  setFilterPicture('filter-popular');
 });
 filterBlock.classList.remove('hidden');
