@@ -12,7 +12,8 @@ var filterBlock = document.querySelector('.filters');
 /** @type {Array.<Object>} */
 var pictures = [];
 /** @constant*/
-var CURRENT_DATE = new Date(/*currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate()*/);
+var CURRENT_DATE = new Date();
+CURRENT_DATE = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), CURRENT_DATE.getDate() - 4);
 /*
 * скрываем при загрузке страницы блок с фильтрами
 */
@@ -106,17 +107,17 @@ var getFilteredPictures = function(picturesar, filter) {
     case 'filter-popular':
       break;
     case 'filter-new':
-      for (var i = 0; i < picturesToFilter.length; i++) {
-        var datePictures = new Date(picturesToFilter[i].date);
-        if(datePictures < CURRENT_DATE - 4 * 24 * 60 * 60 * 1000) {
-          picturesToFilter.splice(i, 1);
-        }
-      }
       picturesToFilter.sort(function(a, b) {
         var dateA = new Date(a.date);
         var dateB = new Date(b.date);
         return dateB - dateA;
       });
+      for (var i = 0; i < picturesToFilter.length; i++) {
+        var datePictures = Date.parse(picturesToFilter[i].date) / 1000;
+        if(datePictures < Date.parse(CURRENT_DATE) / 1000) {
+          picturesToFilter.splice(i, picturesToFilter.length);
+        }
+      }
       break;
     case 'filter-discussed':
       picturesToFilter.sort(function(a, b) {
@@ -146,10 +147,12 @@ var setFilterPicture = function(filter) {
 */
 var setFilterPictures = function() {
   var filters = filterBlock.querySelectorAll('.filters-radio');
+  console.log(filters);
   for (var i = 0; i < filters.length; i++) {
     var count = setCountFilterPictures(filters[i].id);
     if(count <= 0) {
-      filters.classList.add = 'filter-disabled';
+      filters[i].classList.add('filter-disabled');
+      filters[i].setAttribute('disabled', 'disabled');
     }
     filters[i].onclick = function() {
       setFilterPicture(this.id);
@@ -170,7 +173,6 @@ var setCountFilterPictures = function(filter) {
 
 getPictures(function(loadedPictures) {
   pictures = loadedPictures;
-  console.log(pictures);
 //  renderPictures(pictures);
   setFilterPictures(true);
   setFilterPicture('filter-popular');
