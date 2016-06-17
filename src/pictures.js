@@ -6,11 +6,27 @@
 */
 var URL_LOAD_PICTURES = '//o0.github.io/assets/json/pictures.json';
 
+/**
+* количество картинок на страницу
+* @constant {string}
+*/
+var PAGE_SIZE = 12;
+
+/**
+* номер текущей страницы
+* @constant {string}
+*/
+var pageNumber = 0;
+
 //var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
 var filterBlock = document.querySelector('.filters');
 
 /** @type {Array.<Object>} */
 var pictures = [];
+
+/** @type {Array.<Object>} */
+var filteredPictures = [];
+
 /** @constant*/
 var CURRENT_DATE = new Date();
 CURRENT_DATE = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), CURRENT_DATE.getDate() - 4);
@@ -65,7 +81,7 @@ var getPictureElement = function(data, container) {
 */
 var getPictures = function(callback) {
   var xhr = new XMLHttpRequest();
-  xhr.timeout = 10000;
+  xhr.timeout = 5000;
   xhr.ontimeout = function() {
     picturesContainer.classList.add('pictures-failure');
     picturesContainer.classList.remove('pictures-loading');
@@ -88,12 +104,47 @@ var getPictures = function(callback) {
   xhr.send();
 };
 
+var isNextPageAvailable = function(picturesar, page, pageSize) {
+  return page < Math.floor(picturesar.length / pageSize);
+};
+
+/**
+* проверка достижения низа экрана для последующей отрисовки
+*/
+var isBottomPage = function() {
+  var heightBeforeBottomWindow = 100;
+  var picturesPosition = picturesContainer.getBoundingClientRect();
+  return picturesPosition.top - window.innerHeight - heightBeforeBottomWindow <= 0;
+};
+
+/**
+* обработчик позиции на странице
+*/
+var THROTTLE_DELAY = 100;
+
+var setScrollActive = function() {
+  var lastCall = Date.now();
+  window.addEventListener('scroll', function(evt) {
+    if(Date.now() - lastCall >= THROTTLE_DELAY) {
+      if(isBottomPage() && isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
+        pageNumber++;
+        renderPictures(filteredPictures, pageNumber);
+      }
+      lastCall = Date.now();
+    }
+  });
+};
+
 /**
 * отрисовываем полученные данные в соответствии с template
 */
-var renderPictures = function(picturesar) {
-  picturesContainer.innerHTML = '';
-  picturesar.forEach(function(picture) {
+var renderPictures = function(picturesar, page, replace) {
+  if(replace) {
+    picturesContainer.innerHTML = '';
+  }
+  var frompage = page * PAGE_SIZE;
+  var topage = frompage + PAGE_SIZE;
+  picturesar.slice(frompage, topage).forEach(function(picture) {
     getPictureElement(picture, picturesContainer);
   });
 };
@@ -132,8 +183,9 @@ var getFilteredPictures = function(picturesar, filter) {
 * установка checked радиобаттонам для отрисовки активного фильтра
 */
 var setFilterPicture = function(filter) {
-  var filteredPictures = getFilteredPictures(pictures, filter);
-  renderPictures(filteredPictures);
+  filteredPictures = getFilteredPictures(pictures, filter);
+  pageNumber = 0;
+  renderPictures(filteredPictures, pageNumber, true);
   var activeFilter = filterBlock.checked;
   if(activeFilter) {
     activeFilter.checked = false;
@@ -147,7 +199,6 @@ var setFilterPicture = function(filter) {
 */
 var setFilterPictures = function() {
   var filters = filterBlock.querySelectorAll('.filters-radio');
-  console.log(filters);
   for (var i = 0; i < filters.length; i++) {
     var count = setCountFilterPictures(filters[i].id);
     if(count <= 0) {
@@ -163,7 +214,7 @@ var setFilterPictures = function() {
 * функция простановки sup с количеством элементов фильтра
 */
 var setCountFilterPictures = function(filter) {
-  var filteredPictures = getFilteredPictures(pictures, filter);
+  filteredPictures = getFilteredPictures(pictures, filter);
   var sawCountFilter = document.createElement('sup');
   sawCountFilter.innerHTML = filteredPictures.length;
   var currentFilter = filterBlock.querySelector('input' + '#' + filter + '~label');
@@ -176,5 +227,6 @@ getPictures(function(loadedPictures) {
 //  renderPictures(pictures);
   setFilterPictures(true);
   setFilterPicture('filter-popular');
+  setScrollActive();
 });
 filterBlock.classList.remove('hidden');
