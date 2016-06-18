@@ -112,9 +112,10 @@ var isNextPageAvailable = function(picturesar, page, pageSize) {
 * проверка достижения низа экрана для последующей отрисовки
 */
 var isBottomPage = function() {
-  var heightBeforeBottomWindow = 100;
+  var heightBeforeBottomWindow = 14;
   var picturesPosition = picturesContainer.getBoundingClientRect();
-  return picturesPosition.top - window.innerHeight - heightBeforeBottomWindow <= 0;
+  console.log(picturesPosition.bottom, window.innerHeight);
+  return picturesPosition.bottom - window.innerHeight - heightBeforeBottomWindow <= 0;
 };
 
 /**
@@ -133,6 +134,13 @@ var setScrollActive = function() {
       lastCall = Date.now();
     }
   });
+};
+
+var setWindowAdd = function(evt1) {
+  if(isBottomPage() && isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
+    pageNumber++;
+    renderPictures(filteredPictures, pageNumber);
+  }
 };
 
 /**
@@ -186,6 +194,7 @@ var setFilterPicture = function(filter) {
   filteredPictures = getFilteredPictures(pictures, filter);
   pageNumber = 0;
   renderPictures(filteredPictures, pageNumber, true);
+  setWindowAdd();
   var activeFilter = filterBlock.checked;
   if(activeFilter) {
     activeFilter.checked = false;
