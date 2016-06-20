@@ -122,7 +122,7 @@ var THROTTLE_DELAY = 100;
 var throttle = function(optimizeFunc, throttledelay) {
   var lastCall = Date.now();
   return function() {
-    if(Date.now() - lastCall >= throttledelay) {
+    if(Date.now() - lastCall >= throttledelay || window.pageYOffset - window.innerHeight - 50 <= 0) {
       optimizeFunc();
     }
     lastCall = Date.now();
