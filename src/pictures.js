@@ -14,7 +14,7 @@ var PAGE_SIZE = 12;
 
 /**
 * номер текущей страницы
-* @constant {string}
+* {string}
 */
 var pageNumber = 0;
 
@@ -121,8 +121,10 @@ var THROTTLE_DELAY = 100;
 
 var throttle = function(optimizeFunc, throttledelay) {
   var lastCall = Date.now();
+  optimizeFunc(true);
   return function() {
-    if(Date.now() - lastCall >= throttledelay || window.pageYOffset - window.innerHeight - 50 <= 0) {
+    optimizeFunc(false);
+    if(Date.now() - lastCall >= throttledelay) {
       optimizeFunc();
     }
     lastCall = Date.now();
