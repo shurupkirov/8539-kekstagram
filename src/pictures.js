@@ -114,34 +114,32 @@ var isNextPageAvailable = function(picturesar, page, pageSize) {
 var isBottomPage = function() {
   var heightBeforeBottomWindow = 14;
   var picturesPosition = picturesContainer.getBoundingClientRect();
-  console.log(picturesPosition.bottom, window.innerHeight);
   return picturesPosition.bottom - window.innerHeight - heightBeforeBottomWindow <= 0;
+};
+
+var THROTTLE_DELAY = 100;
+
+var throttle = function(optimizeFunc, throttledelay) {
+  var lastCall = Date.now();
+  return function() {
+    if(Date.now() - lastCall >= throttledelay) {
+      optimizeFunc();
+    }
+    lastCall = Date.now();
+  };
 };
 
 /**
 * обработчик позиции на странице
 */
-var THROTTLE_DELAY = 100;
-
-var setScrollActive = function() {
-  var lastCall = Date.now();
-  window.addEventListener('scroll', function(evt) {
-    if(Date.now() - lastCall >= THROTTLE_DELAY) {
-      if(isBottomPage() && isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
-        pageNumber++;
-        renderPictures(filteredPictures, pageNumber);
-      }
-      lastCall = Date.now();
-    }
-  });
-};
-
-var setWindowAdd = function(evt1) {
+var setWindowAdd = function() {
   if(isBottomPage() && isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
     pageNumber++;
     renderPictures(filteredPictures, pageNumber);
   }
 };
+
+var optScroll = throttle(setWindowAdd, THROTTLE_DELAY);
 
 /**
 * отрисовываем полученные данные в соответствии с template
@@ -171,12 +169,11 @@ var getFilteredPictures = function(picturesar, filter) {
         var dateB = new Date(b.date);
         return dateB - dateA;
       });
-      for (var i = 0; i < picturesToFilter.length; i++) {
-        var datePictures = Date.parse(picturesToFilter[i].date) / 1000;
-        if(datePictures < Date.parse(CURRENT_DATE) / 1000) {
-          picturesToFilter.splice(i, picturesToFilter.length);
-        }
-      }
+/*использование filter вместо цикла for*/
+      picturesToFilter = picturesToFilter.filter(function(itemnew) {
+        var newdate = Date.parse(itemnew.date) / 1000;
+        return newdate > Date.parse(CURRENT_DATE) / 1000;
+      });
       break;
     case 'filter-discussed':
       picturesToFilter.sort(function(a, b) {
@@ -233,9 +230,8 @@ var setCountFilterPictures = function(filter) {
 
 getPictures(function(loadedPictures) {
   pictures = loadedPictures;
-//  renderPictures(pictures);
   setFilterPictures(true);
   setFilterPicture('filter-popular');
-  setScrollActive();
+  window.addEventListener('scroll', optScroll);
 });
 filterBlock.classList.remove('hidden');
