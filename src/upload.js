@@ -114,7 +114,7 @@ var browserCookies = require('browser-cookies');
       case'resize-x' :
         if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
           leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
-          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
+//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
         } else {
           leftPositionImage.max = currentResizer._image.naturalWidth - 1;
         }
@@ -122,7 +122,7 @@ var browserCookies = require('browser-cookies');
       case 'resize-y':
         if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
           topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
-          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
+//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
         } else {
           topPositionImage.max = currentResizer._image.naturalHeight - 1;
         }
@@ -140,7 +140,7 @@ var browserCookies = require('browser-cookies');
           sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
         } else {
           sideCropImage.max = sideCropImageMax;
-          currentResizer.setConstraint((currentResizer._image.naturalWidth - sideCropImage.value) / 2, (currentResizer._image.naturalHeight - sideCropImage.value) / 2, +sideCropImage.value);
+//          currentResizer.setConstraint((currentResizer._image.naturalWidth - sideCropImage.value) / 2, (currentResizer._image.naturalHeight - sideCropImage.value) / 2, +sideCropImage.value);
         }
         break;
     }
@@ -148,8 +148,8 @@ var browserCookies = require('browser-cookies');
       submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(event.target);
       submitMessage.classList.remove('invisible');
     } else {
-      console.log(currentResizer.getConstraint().side);
-//      currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
+//      console.log(currentResizer.getConstraint().side);
+      currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
     }
   };
 
@@ -400,14 +400,13 @@ var browserCookies = require('browser-cookies');
   updateBackground();
   var imageResizeChange = function() {
     var currentImage = currentResizer.getConstraint();
-    sideCropImage.value = Math.floor(currentImage.side);
-/*
+//    sideCropImage.value = Math.floor(currentImage.side);
     var currentImageCoordinate = function() {
       leftPositionImage.value = Math.floor(currentImage.x);
       topPositionImage.value = Math.floor(currentImage.y);
       sideCropImage.value = Math.floor(currentImage.side);
     };
-    currentImageCoordinate();*/
+    currentImageCoordinate();
     console.log(currentResizer.getConstraint());
   };
   window.addEventListener('resizerchange', imageResizeChange);
