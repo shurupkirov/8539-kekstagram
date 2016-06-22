@@ -274,7 +274,7 @@ var browserCookies = require('browser-cookies');
 
         showMessage(Action.UPLOADING);
 
-        fileReader.onload = function() {
+        var fileReaderLoad = function() {
           cleanupResizer();
 
           currentResizer = new Resizer(fileReader.result);
@@ -293,7 +293,7 @@ var browserCookies = require('browser-cookies');
           topPositionImage.max = currentResizer._image.naturalHeight - 1;
           hideMessage();
         };
-
+        fileReader.addEventListener('load', fileReaderLoad);
         fileReader.readAsDataURL(element.files[0]);
       } else {
         // Показ сообщения об ошибке, если загружаемый файл, не является
