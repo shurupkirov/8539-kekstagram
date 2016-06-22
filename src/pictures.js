@@ -14,7 +14,7 @@ var PAGE_SIZE = 12;
 
 /**
 * номер текущей страницы
-* @constant {string}
+* {string}
 */
 var pageNumber = 0;
 
@@ -82,26 +82,30 @@ var getPictureElement = function(data, container) {
 var getPictures = function(callback) {
   var xhr = new XMLHttpRequest();
   xhr.timeout = 5000;
-  xhr.ontimeout = function() {
+  var loadDataTimeout = function() {
     picturesContainer.classList.add('pictures-failure');
     picturesContainer.classList.remove('pictures-loading');
   };
-  xhr.onerror = function() {
+  var loadDataError = function() {
     picturesContainer.classList.add('pictures-failure');
     picturesContainer.classList.remove('pictures-loading');
   };
   picturesContainer.classList.add('pictures-loading');
-  xhr.onreadystatechange = function() {
+  var loadDataStatus = function() {
     if(xhr.readyState === 4) {
       picturesContainer.classList.remove('pictures-loading');
     }
   };
-  xhr.onload = function(evt) {
+  var loadDataStart = function(evt) {
     var loadedData = JSON.parse(evt.target.response);
     callback(loadedData);
   };
   xhr.open('GET', URL_LOAD_PICTURES);
   xhr.send();
+  xhr.addEventListener('timeout', loadDataTimeout);
+  xhr.addEventListener('error', loadDataError);
+  xhr.addEventListener('readystatechange', loadDataStatus);
+  xhr.addEventListener('load', loadDataStart);
 };
 
 var isNextPageAvailable = function(picturesar, page, pageSize) {
@@ -121,8 +125,10 @@ var THROTTLE_DELAY = 100;
 
 var throttle = function(optimizeFunc, throttledelay) {
   var lastCall = Date.now();
+  optimizeFunc(true);
   return function() {
-    if(Date.now() - lastCall >= throttledelay || window.pageYOffset - window.innerHeight - 50 <= 0) {
+    optimizeFunc(false);
+    if(Date.now() - lastCall >= throttledelay) {
       optimizeFunc();
     }
     lastCall = Date.now();

@@ -90,6 +90,7 @@ var browserCookies = require('browser-cookies');
     var randomImageNumber = Math.round(Math.random() * (images.length - 1));
     backgroundElement.style.backgroundImage = 'url(' + images[randomImageNumber] + ')';
   }
+
   /**
    * Входные данные инпутов формы
    */
@@ -104,53 +105,54 @@ var browserCookies = require('browser-cookies');
   /**
    * Проверка введенных данных в инпуты
    */
-  leftPositionImage.oninput = function() {
+  var inputonchange;
+  var inputChangeForm = function() {
     buttonCropSubmit.disabled = false;
     submitMessage.classList.add('invisible');
-    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
-      leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
-    } else {
-      leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+    inputonchange = event.target;
+    switch(inputonchange.id) {
+      case'resize-x' :
+        if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+          leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
+//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
+        } else {
+          leftPositionImage.max = currentResizer._image.naturalWidth - 1;
+        }
+        break;
+      case 'resize-y':
+        if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+          topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
+//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
+        } else {
+          topPositionImage.max = currentResizer._image.naturalHeight - 1;
+        }
+        break;
+      case 'resize-size':
+        if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
+          if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
+            sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+          } else {
+            sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+          }
+        } else if (leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
+          sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
+        } else if (topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
+          sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
+        } else {
+          sideCropImage.max = sideCropImageMax;
+//          currentResizer.setConstraint((currentResizer._image.naturalWidth - sideCropImage.value) / 2, (currentResizer._image.naturalHeight - sideCropImage.value) / 2, +sideCropImage.value);
+        }
+        break;
     }
-    if (!leftPositionImage.validity.valid) {
-      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(leftPositionImage);
+    if (!event.target.validity.valid) {
+      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(event.target);
       submitMessage.classList.remove('invisible');
+    } else {
+//      console.log(currentResizer.getConstraint().side);
+      currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
     }
   };
-  topPositionImage.oninput = function() {
-    buttonCropSubmit.disabled = false;
-    submitMessage.classList.add('invisible');
-    if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
-      topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
-    } else {
-      topPositionImage.max = currentResizer._image.naturalHeight - 1;
-    }
-    if (!topPositionImage.validity.valid) {
-      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(topPositionImage);
-      submitMessage.classList.remove('invisible');
-    }
-  };
-  sideCropImage.oninput = function() {
-    buttonCropSubmit.disabled = false;
-    submitMessage.classList.add('invisible');
-    if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
-      if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
-        sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
-      } else {
-        sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
-      }
-    } else if (leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
-      sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
-    } else if (topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
-      sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
-    } else {
-      sideCropImage.max = sideCropImageMax;
-    }
-    if (!sideCropImage.validity.valid) {
-      submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(sideCropImage);
-      submitMessage.classList.remove('invisible');
-    }
-  };
+
   /**
    * @type {HTMLElement}
    */
@@ -262,7 +264,7 @@ var browserCookies = require('browser-cookies');
    * и показывается форма кадрирования.
    * @param {Event} evt
    */
-  uploadForm.onchange = function(evt) {
+  var uploadFormChange = function(evt) {
     var element = evt.target;
     if (element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
@@ -300,13 +302,13 @@ var browserCookies = require('browser-cookies');
       }
     }
   };
-
+  uploadForm.addEventListener('change', uploadFormChange);
   /**
    * Обработка сброса формы кадрирования. Возвращает в начальное состояние
    * и обновляет фон.
    * @param {Event} evt
    */
-  resizeForm.onreset = function(evt) {
+  var resizeFormReset = function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -321,7 +323,7 @@ var browserCookies = require('browser-cookies');
    * кропнутое изображение в форму добавления фильтра и показывает ее.
    * @param {Event} evt
    */
-  resizeForm.onsubmit = function(evt) {
+  var resizeFormSubmit = function(evt) {
     evt.preventDefault();
 
     if (resizeFormIsValid()) {
@@ -332,17 +334,18 @@ var browserCookies = require('browser-cookies');
       filterImage.className = 'filter-image-preview ' + browserCookies.get('filter');
       var inputactive = filterForm.querySelector('#upload-' + browserCookies.get('filter'));
       inputactive.checked = true;
-      console.log(filterImage.className);
     }
   };
+  resizeForm.addEventListener('input', inputChangeForm);
+  resizeForm.addEventListener('submit', resizeFormSubmit);
+  resizeForm.addEventListener('reset', resizeFormReset);
 
   /**
    * Сброс формы фильтра. Показывает форму кадрирования.
    * @param {Event} evt
    */
-  filterForm.onreset = function(evt) {
+  var filterFormReset = function(evt) {
     evt.preventDefault();
-
     filterForm.classList.add('invisible');
     resizeForm.classList.remove('invisible');
   };
@@ -352,7 +355,7 @@ var browserCookies = require('browser-cookies');
    * записав сохраненный фильтр в cookie.
    * @param {Event} evt
    */
-  filterForm.onsubmit = function(evt) {
+  var filterFormSubmit = function(evt) {
     evt.preventDefault();
 
     cleanupResizer();
@@ -366,7 +369,7 @@ var browserCookies = require('browser-cookies');
    * Обработчик изменения фильтра. Добавляет класс из filterMap соответствующий
    * выбранному значению в форме.
    */
-  filterForm.onchange = function() {
+  var filterFormChange = function() {
     if (!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
@@ -390,7 +393,21 @@ var browserCookies = require('browser-cookies');
       expires: getDayFromBirthday()
     });
   };
-
+  filterForm.addEventListener('reset', filterFormReset);
+  filterForm.addEventListener('submit', filterFormSubmit);
+  filterForm.addEventListener('change', filterFormChange);
   cleanupResizer();
   updateBackground();
+  var imageResizeChange = function() {
+    var currentImage = currentResizer.getConstraint();
+//    sideCropImage.value = Math.floor(currentImage.side);
+    var currentImageCoordinate = function() {
+      leftPositionImage.value = Math.floor(currentImage.x);
+      topPositionImage.value = Math.floor(currentImage.y);
+      sideCropImage.value = Math.floor(currentImage.side);
+    };
+    currentImageCoordinate();
+    console.log(currentResizer.getConstraint());
+  };
+  window.addEventListener('resizerchange', imageResizeChange);
 })();
