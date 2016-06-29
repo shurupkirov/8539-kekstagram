@@ -1,23 +1,14 @@
 'use strict';
 require('./resizer');
-require('./upload');
-//require('./pictures');
+require('./upload/upload');
 
 var loaded = require('./loaded');
-var Picture = require('./pictures');
+var Picture = require('./pictures/pictures');
 var utilities = require('./utilities');
+var filterPict = require('./pictures/picture-filter');
 
 //var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
 var filterBlock = document.querySelector('.filters');
-
-/** @constant*/
-var CURRENT_DATE = new Date();
-CURRENT_DATE = new Date(CURRENT_DATE.getFullYear(), CURRENT_DATE.getMonth(), CURRENT_DATE.getDate() - 4);
-
-/*
-* скрываем при загрузке страницы блок с фильтрами
-*/
-filterBlock.classList.add('hidden');
 
 var picturesContainer = document.querySelector('.pictures');
 
@@ -56,8 +47,6 @@ var filterPictures = [];
 /** @constant {number}*/
 var IMAGE_LOAD_TIMEOUT = 15000;
 
-//var picturesContainer = document.querySelector('.pictures');
-
 /**
 * отрисовываем полученные данные в соответствии с template
 */
@@ -86,40 +75,12 @@ var setWindowAdd = function() {
 };
 
 var optScroll = utilities.throttle(setWindowAdd, THROTTLE_DELAY);
-/**
-* фильтрация данныех согласно правилам
-*/
-var getFilteredPictures = function(picturesar, filter) {
-  var picturesToFilter = picturesar.slice(0);
-  switch(filter) {
-    case 'filter-popular':
-      break;
-    case 'filter-new':
-      picturesToFilter.sort(function(a, b) {
-        var dateA = new Date(a.date);
-        var dateB = new Date(b.date);
-        return dateB - dateA;
-      });
-/*использование filter вместо цикла for*/
-      picturesToFilter = picturesToFilter.filter(function(itemnew) {
-        var newdate = Date.parse(itemnew.date) / 1000;
-        return newdate > Date.parse(CURRENT_DATE) / 1000;
-      });
-      break;
-    case 'filter-discussed':
-      picturesToFilter.sort(function(a, b) {
-        return a.comments - b.comments;
-      });
-      break;
-  }
-  return picturesToFilter;
-};
 
 /**
 * установка checked радиобаттонам для отрисовки активного фильтра
 */
 var setFilterPicture = function(filter) {
-  filterPictures = getFilteredPictures(pictures, filter);
+  filterPictures = filterPict.getFilteredPictures(pictures, filter);
   pageNumber = 0;
   renderPictures(filterPictures, pageNumber, true);
   setWindowAdd();
@@ -151,17 +112,18 @@ var setFilterPictures = function() {
 * функция простановки sup с количеством элементов фильтра
 */
 var setCountFilterPictures = function(filter) {
-  filterPictures = getFilteredPictures(pictures, filter);
+  filterPictures = filterPict.getFilteredPictures(pictures, filter);
   var sawCountFilter = document.createElement('sup');
   sawCountFilter.innerHTML = filterPictures.length;
   var currentFilter = filterBlock.querySelector('input' + '#' + filter + '~label');
   currentFilter.outerHTML = currentFilter.outerHTML + sawCountFilter.outerHTML;
   return filterPictures.length;
 };
-
+filterBlock.classList.add('hidden');
 loaded(URL_LOAD_PICTURES, IMAGE_LOAD_TIMEOUT, picturesContainer, function(loadedPictures) {
   pictures = loadedPictures;
   setFilterPictures(true);
   setFilterPicture('filter-popular');
   window.addEventListener('scroll', optScroll);
 });
+filterBlock.classList.remove('hidden');

@@ -7,29 +7,11 @@
 
 'use strict';
 
-/** Дата рождения @constant {date} */
-var BIRTHDAY_DATE = new Date('1978', '9', '26');
-
-/*Функция вычисления количества дней с ближайщего дня рождения*/
-function getDayFromBirthday() {
-  var currentDate = new Date();
-  currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-  if (currentDate.getMonth() >= BIRTHDAY_DATE.getMonth()) {
-    if (currentDate.getDate() < BIRTHDAY_DATE.getDate()) {
-      BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
-    } else {
-      BIRTHDAY_DATE.setFullYear(currentDate.getFullYear());
-    }
-  } else {
-    BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
-  }
-  var lastDayFromBirthday = Math.floor((currentDate - BIRTHDAY_DATE) / (1000 * 60 * 60 * 24));
-  return lastDayFromBirthday;
-}
-
 /** Подключение зависимости библиотеки browser-cookies в переменную
  */
 var browserCookies = require('browser-cookies');
+
+var utilities = require('../utilities');
 
 (function() {
   /** @enum {string} */
@@ -114,7 +96,6 @@ var browserCookies = require('browser-cookies');
       case'resize-x' :
         if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
           leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
-//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
         } else {
           leftPositionImage.max = currentResizer._image.naturalWidth - 1;
         }
@@ -122,7 +103,6 @@ var browserCookies = require('browser-cookies');
       case 'resize-y':
         if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
           topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
-//          currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
         } else {
           topPositionImage.max = currentResizer._image.naturalHeight - 1;
         }
@@ -140,7 +120,6 @@ var browserCookies = require('browser-cookies');
           sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
         } else {
           sideCropImage.max = sideCropImageMax;
-//          currentResizer.setConstraint((currentResizer._image.naturalWidth - sideCropImage.value) / 2, (currentResizer._image.naturalHeight - sideCropImage.value) / 2, +sideCropImage.value);
         }
         break;
     }
@@ -148,7 +127,6 @@ var browserCookies = require('browser-cookies');
       submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(event.target);
       submitMessage.classList.remove('invisible');
     } else {
-//      console.log(currentResizer.getConstraint().side);
       currentResizer.setConstraint(+leftPositionImage.value, +topPositionImage.value, +sideCropImage.value);
     }
   };
@@ -157,6 +135,7 @@ var browserCookies = require('browser-cookies');
    * @type {HTMLElement}
    */
   var submitMessage = document.querySelector('.submit-message');
+
   /**
    * Проверяет правильноть элемента формы
    * и возвращает сообщение об ошибке
@@ -175,6 +154,7 @@ var browserCookies = require('browser-cookies');
    * Проверяет, валидны ли данные, в форме кадрирования.
    * @return {boolean}
    */
+
   function resizeFormIsValid() {
     if (leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
       buttonCropSubmit.disabled = false; return true;
@@ -199,6 +179,7 @@ var browserCookies = require('browser-cookies');
     }
 
   }
+
 
   /**
    * Форма загрузки изображения.
@@ -390,7 +371,7 @@ var browserCookies = require('browser-cookies');
     // состояние или просто перезаписывать.
     filterImage.className = 'filter-image-preview ' + filterMap[selectedFilter];
     browserCookies.set('filter', filterMap[selectedFilter], {
-      expires: getDayFromBirthday()
+      expires: utilities.getDayFromBirthday()
     });
   };
   filterForm.addEventListener('reset', filterFormReset);
@@ -400,14 +381,12 @@ var browserCookies = require('browser-cookies');
   updateBackground();
   var imageResizeChange = function() {
     var currentImage = currentResizer.getConstraint();
-//    sideCropImage.value = Math.floor(currentImage.side);
     var currentImageCoordinate = function() {
       leftPositionImage.value = Math.floor(currentImage.x);
       topPositionImage.value = Math.floor(currentImage.y);
       sideCropImage.value = Math.floor(currentImage.side);
     };
     currentImageCoordinate();
-    console.log(currentResizer.getConstraint());
   };
   window.addEventListener('resizerchange', imageResizeChange);
 })();
