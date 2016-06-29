@@ -1,5 +1,5 @@
 'use strict';
-require('./resizer');
+//require('./resizer');
 require('./upload/upload');
 
 var loaded = require('./loaded');

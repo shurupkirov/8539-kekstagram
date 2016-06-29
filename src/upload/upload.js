@@ -1,4 +1,6 @@
-/* global Resizer: true */
+/*
+* global Resizer: true
+*/
 
 /**
  * @fileoverview
@@ -12,6 +14,7 @@
 var browserCookies = require('browser-cookies');
 
 var utilities = require('../utilities');
+var Resizer = require('../resizer');
 
 (function() {
   /** @enum {string} */
