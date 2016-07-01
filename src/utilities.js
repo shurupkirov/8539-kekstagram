@@ -14,9 +14,8 @@ module.exports = {
 /*
 * Проверка возможности отрисовки следующей страницы
 */
-  isNextPageAvailable: function(picturesar, page, pageSize) {
-    console.log(picturesar.length);
-    return page < Math.floor(picturesar.length / pageSize);
+  isNextPageAvailable: function(alllist, page, pageSize) {
+    return page < Math.ceil(alllist / pageSize);
   },
 
   /*Функция вычисления количества дней с ближайщего дня рождения*/

@@ -3,6 +3,7 @@
 //var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
 var gallery = require('../gallery');
 var getPictureElement = require('./get-pictures-element');
+var utilities = require('../utilities');
 
 var Picture = function(data, container) {
   this.data = data;
@@ -11,6 +12,12 @@ var Picture = function(data, container) {
     if (evt.target.tagName === 'IMG') {
       evt.preventDefault();
       gallery.showPhoto(data);
+    }
+  };
+  this.onPictureKeydown = function(evt) {
+    if(utilities.isDeactivationEvent(evt)) {
+      evt.preventDefault();
+      gallery.hidePhoto();
     }
   };
   this.remove = function() {
