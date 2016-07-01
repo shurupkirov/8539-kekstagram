@@ -5,12 +5,17 @@ var heightBeforeBottomWindow = 14;
 /** Дата рождения @constant {date} */
 var BIRTHDAY_DATE = new Date('1978', '9', '26');
 
+var KeyCode = {
+  ESC: 27
+};
+
 module.exports = {
 
 /*
 * Проверка возможности отрисовки следующей страницы
 */
   isNextPageAvailable: function(picturesar, page, pageSize) {
+    console.log(picturesar.length);
     return page < Math.floor(picturesar.length / pageSize);
   },
 
@@ -44,5 +49,8 @@ module.exports = {
       clearTimeout(optimizeFunc._throttledelayID);
       optimizeFunc._throttledelayID = setTimeout(optimizeFunc, throttledelay);
     };
+  },
+  isDeactivationEvent: function(evt) {
+    return evt.keyCode === KeyCode.ESC;
   }
 };

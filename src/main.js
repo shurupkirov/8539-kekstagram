@@ -3,6 +3,7 @@
 require('./upload/upload');
 
 var loaded = require('./loaded');
+var gallery = require('./gallery');
 var Picture = require('./pictures/pictures');
 var utilities = require('./utilities');
 var filterPict = require('./pictures/picture-filter');
@@ -68,7 +69,7 @@ var renderPictures = function(picturesar, page, replace) {
 * обработчик позиции на странице
 */
 var setWindowAdd = function() {
-  while(utilities.isBottomPage(picturesContainer) && utilities.isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
+  if(utilities.isBottomPage(picturesContainer) && utilities.isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
     renderPictures(filterPictures, pageNumber);
     pageNumber++;
   }
@@ -84,6 +85,7 @@ var setFilterPicture = function(filter) {
   pageNumber = 0;
   renderPictures(filterPictures, pageNumber, true);
   setWindowAdd();
+  gallery.savePictures(filterPictures);
   var activeFilter = filterBlock.checked;
   if(activeFilter) {
     activeFilter.checked = false;
