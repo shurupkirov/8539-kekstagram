@@ -68,8 +68,4 @@ var Gallery = function() {
 
 };
 
-var photoGallery = new Gallery();
-module.exports = {
-  showPhoto: photoGallery.showPhoto,
-  savePictures: photoGallery.savePictures
-};
+module.exports = new Gallery();

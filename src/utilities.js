@@ -1,6 +1,6 @@
 'use strict';
 
-var heightBeforeBottomWindow = 14;
+var heightBeforeBottomWindow = 182;
 
 /** Дата рождения @constant {date} */
 var BIRTHDAY_DATE = new Date('1978', '9', '26');
