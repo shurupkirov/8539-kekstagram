@@ -51,15 +51,11 @@ var IMAGE_LOAD_TIMEOUT = 15000;
 /**
 * отрисовываем полученные данные в соответствии с template
 */
-var renderPictures = function(picturesar, page, replace) {
-  if(replace) {
-    picturesContainer.innerHTML = '';
-  }
+var renderPictures = function(picturesar, page) {
   var frompage = page * PAGE_SIZE;
   var topage = frompage + PAGE_SIZE;
   var container = document.createDocumentFragment();
   picturesar.slice(frompage, topage).forEach(function(picture) {
-//    getPictureElement(picture, picturesContainer, IMAGE_LOAD_TIMEOUT);
     renderedPictures.push(new Picture(picture, container));
   });
   picturesContainer.appendChild(container);
@@ -68,8 +64,15 @@ var renderPictures = function(picturesar, page, replace) {
 /**
 * обработчик позиции на странице
 */
-var setWindowAdd = function() {
-  if(utilities.isBottomPage(picturesContainer) && utilities.isNextPageAvailable(pictures, pageNumber, PAGE_SIZE)) {
+var setWindowAdd = function(reset) {
+  if(reset) {
+    pageNumber = 0;
+    renderedPictures.forEach(function(picture) {
+      picture.remove();
+    });
+    renderedPictures = [];
+  }
+  while(utilities.isBottomPage(picturesContainer) && utilities.isNextPageAvailable(pictures.length, pageNumber, PAGE_SIZE)) {
     renderPictures(filterPictures, pageNumber);
     pageNumber++;
   }
@@ -83,8 +86,8 @@ var optScroll = utilities.throttle(setWindowAdd, THROTTLE_DELAY);
 var setFilterPicture = function(filter) {
   filterPictures = filterPict.getFilteredPictures(pictures, filter);
   pageNumber = 0;
-  renderPictures(filterPictures, pageNumber, true);
-  setWindowAdd();
+  renderPictures(filterPictures, pageNumber);
+  setWindowAdd(true);
   gallery.savePictures(filterPictures);
   var activeFilter = filterBlock.checked;
   if(activeFilter) {
@@ -124,7 +127,7 @@ var setCountFilterPictures = function(filter) {
 filterBlock.classList.add('hidden');
 loaded(URL_LOAD_PICTURES, IMAGE_LOAD_TIMEOUT, picturesContainer, function(loadedPictures) {
   pictures = loadedPictures;
-  setFilterPictures(true);
+  setFilterPictures();
   setFilterPicture('filter-popular');
   window.addEventListener('scroll', optScroll);
 });

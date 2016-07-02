@@ -1,7 +1,7 @@
 'use strict';
 var utilities = require('./utilities');
 
-var Photogallery = function() {
+var Gallery = function() {
 
   this.galleryContainer = document.querySelector('.gallery-overlay');
   var previewContainer = this.galleryContainer.querySelector('.gallery-overlay-image');
@@ -47,6 +47,11 @@ var Photogallery = function() {
     likeContainer.innerHTML = galleryPhoto[activPhoto].likes;
     commentContainer.innerHTML = galleryPhoto[activPhoto].comments;
   };
+  this.remove = function() {
+    previewContainer.removeEventListener('click', this._onPhotoClick);
+    document.removeEventListener('keydown', this._onDocumentKeyDown);
+    closePhoto.removeEventListener('click', this._onCloseClickHandler);
+  };
 
   this.showPhoto = function(picture) {
     this.activePhoto = galleryPhoto.indexOf(picture);
@@ -58,14 +63,12 @@ var Photogallery = function() {
   };
   this.hidePhoto = function() {
     self.galleryContainer.classList.add('invisible');
-    previewContainer.removeEventListener('click', this._onPhotoClick);
-    document.removeEventListener('keydown', this._onDocumentKeyDown);
-    closePhoto.removeEventListener('click', this._onCloseClickHandler);
+    this.remove();
   };
 
 };
 
-var photoGallery = new Photogallery();
+var photoGallery = new Gallery();
 module.exports = {
   showPhoto: photoGallery.showPhoto,
   savePictures: photoGallery.savePictures
