@@ -129,7 +129,7 @@ filterBlock.classList.add('hidden');
 loaded(URL_LOAD_PICTURES, IMAGE_LOAD_TIMEOUT, picturesContainer, function(loadedPictures) {
   pictures = loadedPictures;
   setFilterPictures();
-  setFilterPicture(localStorage.getItem('lastPicturesFilter'));
+  setFilterPicture(localStorage.getItem('lastPicturesFilter') || 'filter-popular');
   window.addEventListener('scroll', optScroll);
 });
 filterBlock.classList.remove('hidden');
