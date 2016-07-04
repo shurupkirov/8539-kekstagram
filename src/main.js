@@ -110,6 +110,7 @@ var setFilterPictures = function() {
     }
     filters[i].onclick = function() {
       setFilterPicture(this.id);
+      localStorage.setItem('lastPicturesFilter', this.id);
     };
   }
 };
@@ -128,7 +129,7 @@ filterBlock.classList.add('hidden');
 loaded(URL_LOAD_PICTURES, IMAGE_LOAD_TIMEOUT, picturesContainer, function(loadedPictures) {
   pictures = loadedPictures;
   setFilterPictures();
-  setFilterPicture('filter-popular');
+  setFilterPicture(localStorage.getItem('lastPicturesFilter'));
   window.addEventListener('scroll', optScroll);
 });
 filterBlock.classList.remove('hidden');
