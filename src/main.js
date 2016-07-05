@@ -2,8 +2,8 @@
 //require('./resizer');
 require('./upload/upload');
 
-var loaded = require('./loaded');
 var gallery = require('./gallery');
+var loaded = require('./loaded');
 var Picture = require('./pictures/pictures');
 var utilities = require('./utilities');
 var filterPict = require('./pictures/picture-filter');
@@ -130,6 +130,9 @@ loaded(URL_LOAD_PICTURES, IMAGE_LOAD_TIMEOUT, picturesContainer, function(loaded
   pictures = loadedPictures;
   setFilterPictures();
   setFilterPicture(localStorage.getItem('lastPicturesFilter') || 'filter-popular');
+  if(location.hash !== '') {
+    gallery._onHashChange();
+  }
   window.addEventListener('scroll', optScroll);
 });
 filterBlock.classList.remove('hidden');

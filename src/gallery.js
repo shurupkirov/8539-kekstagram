@@ -34,18 +34,49 @@ var Gallery = function() {
   var _onDocumentKeyDown = function(evt) {
     if(utilities.isDeactivationEvent(evt)) {
       evt.preventDefault();
+      location.hash = '';
       self.hidePhoto();
     }
   };
 
   var _onCloseClickHandler = function() {
+    location.hash = '';
     self.hidePhoto();
   };
 
+  this._onHashChange = function() {
+    var currentHash = location.hash;
+    var getPhotoUrl = /#photo\/(\S+)/.exec(currentHash);
+    if(getPhotoUrl) {
+      if(galleryPhoto.some(function(photo) {
+        return photo.url === getPhotoUrl[1];
+      })) {
+        self.showPhoto(getPhotoUrl[1]);
+      } else {
+        self.hidePhoto();
+        location.hash = '';
+      }
+    } else {
+      self.hidePhoto();
+    }
+  };
+
   var setActivePhoto = function(activPhoto) {
+    galleryPhoto.filter(function(el, i) {
+      if(el.url === activPhoto) {
+        console.log(activPhoto);
+        self.activePhoto = i;
+        previewContainer.src = activPhoto;
+        likeContainer.innerHTML = el.likes;
+        commentContainer.innerHTML = el.comments;
+      }
+      return self.activePhoto;
+    });
+/*
     previewContainer.src = galleryPhoto[activPhoto].url;
     likeContainer.innerHTML = galleryPhoto[activPhoto].likes;
     commentContainer.innerHTML = galleryPhoto[activPhoto].comments;
+    */
   };
   this.remove = function() {
     previewContainer.removeEventListener('click', this._onPhotoClick);
@@ -54,8 +85,9 @@ var Gallery = function() {
   };
 
   this.showPhoto = function(picture) {
-    this.activePhoto = galleryPhoto.indexOf(picture);
-    setActivePhoto(this.activePhoto);
+//    this.activePhoto = galleryPhoto.indexOf(picture);
+//    setActivePhoto(this.activePhoto);
+    setActivePhoto(picture);
     self.galleryContainer.classList.remove('invisible');
     previewContainer.addEventListener('click', _onPhotoClick);
     document.addEventListener('keydown', _onDocumentKeyDown);
@@ -65,6 +97,8 @@ var Gallery = function() {
     self.galleryContainer.classList.add('invisible');
     this.remove();
   };
+
+  window.addEventListener('hashchange', this._onHashChange);
 
 };
 
