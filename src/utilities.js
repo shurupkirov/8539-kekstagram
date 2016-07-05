@@ -1,5 +1,5 @@
 'use strict';
-
+/** Отступ для сработки следующего экрана @constant {number} */
 var heightBeforeBottomWindow = 182;
 
 /** Дата рождения @constant {date} */

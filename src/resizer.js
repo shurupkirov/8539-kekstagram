@@ -1,6 +1,5 @@
 'use strict';
 
-//(function() {
   /**
    * @constructor
    * @param {string} image
@@ -140,13 +139,7 @@ Resizer.prototype = {
       );
     this._ctx.fill('evenodd');
     this._ctx.closePath();
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования. Координаты задаются от центра.
-      /*this._ctx.strokeRect(
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          (-this._resizeConstraint.side / 2) - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2,
-          this._resizeConstraint.side - this._ctx.lineWidth / 2);*/
+
       // Отрисовка текста с размером изображения
     this._ctx.fillStyle = 'white';
     this._ctx.font = '16px Tahoma';
@@ -154,36 +147,7 @@ Resizer.prototype = {
     var dispSizeImg = this._image.naturalWidth + 'x' + this._image.naturalHeight;
     this._ctx.fillText(dispSizeImg, 0, (-this._resizeConstraint.side / 2) - this._ctx.lineWidth * 2);
     this._ctx.fillStyle = '#ffe753';
-      // Отрисовка прямоугольника, обозначающего область изображения после
-      // кадрирования с помощью точек радиусом 3
-      /*
-      for(var i = 0; i < Math.floor(this._resizeConstraint.side / 12 + 1); i++) {
-        this._ctx.beginPath();
-        this._ctx.arc(
-          (-this._resizeConstraint.side / 2) - 3 + i * 12,
-          (-this._resizeConstraint.side / 2) - 3,
-          3, 0, Math.PI * 2, false);
-        this._ctx.fill();
-        this._ctx.beginPath();
-        this._ctx.arc(
-          (-this._resizeConstraint.side / 2) - 3 + i * 12,
-          (this._resizeConstraint.side / 2) - 3 * 2,
-          3, 0, Math.PI * 2, false);
-        this._ctx.fill();
-        this._ctx.beginPath();
-        this._ctx.arc(
-          (this._resizeConstraint.side / 2) - 3 * 2,
-          (-this._resizeConstraint.side / 2) - 3 + i * 12,
-          3, 0, Math.PI * 2, false);
-        this._ctx.fill();
-        this._ctx.beginPath();
-        this._ctx.arc(
-          (-this._resizeConstraint.side / 2) - 3,
-          (-this._resizeConstraint.side / 2) - 3 + i * 12,
-          3, 0, Math.PI * 2, false);
-        this._ctx.fill();
-      }
-      */
+
       // Отрисовка прямоугольника с рамкой зигзагом
     this._ctx.beginPath();
     this._ctx.lineWidth = 3;
@@ -428,6 +392,3 @@ var Coordinate = function(x, y) {
 };
 
 module.exports = Resizer;
-//  window.Resizer = Resizer;
-
-//})();
