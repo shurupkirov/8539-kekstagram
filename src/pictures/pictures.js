@@ -11,7 +11,9 @@ var Picture = function(data, container) {
   this.onPictureClick = function(evt) {
     if (evt.target.tagName === 'IMG') {
       evt.preventDefault();
-      gallery.showPhoto(data);
+      console.log(data);
+//      gallery.showPhoto(data);
+      location.hash = '#photo/' + data.url;
     }
   };
   this.onPictureKeydown = function(evt) {
