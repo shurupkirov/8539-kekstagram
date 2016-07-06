@@ -4,102 +4,97 @@ var utilities = require('./utilities');
 var Gallery = function() {
 
   this.galleryContainer = document.querySelector('.gallery-overlay');
-  var previewContainer = this.galleryContainer.querySelector('.gallery-overlay-image');
-  var closePhoto = this.galleryContainer.querySelector('.gallery-overlay-close');
-  var likeContainer = this.galleryContainer.querySelector('.likes-count');
-  var commentContainer = this.galleryContainer.querySelector('.comments-count');
-  var galleryPhoto = [];
-
-  var self = this;
+  this.previewContainer = this.galleryContainer.querySelector('.gallery-overlay-image');
+  this.closePhoto = this.galleryContainer.querySelector('.gallery-overlay-close');
+  this.likeContainer = this.galleryContainer.querySelector('.likes-count');
+  this.commentContainer = this.galleryContainer.querySelector('.comments-count');
+  this.galleryPhoto = [];
+  this.galleryPhotoSrc = [];
   this.activePhoto = 0;
-  this.savePictures = function(pictures) {
-    if(pictures !== galleryPhoto) {
-      galleryPhoto = [];
-      galleryPhoto = pictures;
-      pictures.forEach(function(pict) {
-        var photo = new Image();
-        photo.src = pict;
-      }, this);
-    }
-  };
 
-  var _onPhotoClick = function() {
-    self.activePhoto += 1;
-    if(self.activePhoto === galleryPhoto.length) {
-      self.activePhoto = 0;
-    }
-    setActivePhoto(self.activePhoto);
-  };
-
-  var _onDocumentKeyDown = function(evt) {
-    if(utilities.isDeactivationEvent(evt)) {
-      evt.preventDefault();
-      location.hash = '';
-      self.hidePhoto();
-    }
-  };
-
-  var _onCloseClickHandler = function() {
-    location.hash = '';
-    self.hidePhoto();
-  };
-
-  this._onHashChange = function() {
-    var currentHash = location.hash;
-    var getPhotoUrl = /#photo\/(\S+)/.exec(currentHash);
-    if(getPhotoUrl) {
-      if(galleryPhoto.some(function(photo) {
-        return photo.url === getPhotoUrl[1];
-      })) {
-        self.showPhoto(getPhotoUrl[1]);
-      } else {
-        self.hidePhoto();
-        location.hash = '';
-      }
-    } else {
-      self.hidePhoto();
-    }
-  };
-
-  var setActivePhoto = function(activPhoto) {
-    galleryPhoto.filter(function(el, i) {
-      if(el.url === activPhoto) {
-        console.log(activPhoto);
-        self.activePhoto = i;
-        previewContainer.src = activPhoto;
-        likeContainer.innerHTML = el.likes;
-        commentContainer.innerHTML = el.comments;
-      }
-      return self.activePhoto;
-    });
-/*
-    previewContainer.src = galleryPhoto[activPhoto].url;
-    likeContainer.innerHTML = galleryPhoto[activPhoto].likes;
-    commentContainer.innerHTML = galleryPhoto[activPhoto].comments;
-    */
-  };
-  this.remove = function() {
-    previewContainer.removeEventListener('click', this._onPhotoClick);
-    document.removeEventListener('keydown', this._onDocumentKeyDown);
-    closePhoto.removeEventListener('click', this._onCloseClickHandler);
-  };
-
-  this.showPhoto = function(picture) {
-//    this.activePhoto = galleryPhoto.indexOf(picture);
-//    setActivePhoto(this.activePhoto);
-    setActivePhoto(picture);
-    self.galleryContainer.classList.remove('invisible');
-    previewContainer.addEventListener('click', _onPhotoClick);
-    document.addEventListener('keydown', _onDocumentKeyDown);
-    closePhoto.addEventListener('click', _onCloseClickHandler);
-  };
-  this.hidePhoto = function() {
-    self.galleryContainer.classList.add('invisible');
-    this.remove();
-  };
+  this.savePictures = this.savePictures.bind(this);
+  this._onPhotoClick = this._onPhotoClick.bind(this);
+  this._onCloseClickHandler = this._onCloseClickHandler.bind(this);
+  this._onDocumentKeyDown = this._onDocumentKeyDown.bind(this);
+  this.remove = this.remove.bind(this);
+  this._onHashChange = this._onHashChange.bind(this);
 
   window.addEventListener('hashchange', this._onHashChange);
 
 };
+
+Gallery.prototype.savePictures = function(pictures) {
+  if(pictures !== this.galleryPhoto) {
+    this.galleryPhoto = [];
+    this.galleryPhoto = pictures;
+    pictures.forEach(function(pict) {
+      this.galleryPhotoSrc.push(pict.url);
+    }, this);
+  }
+};
+
+Gallery.prototype._onPhotoClick = function() {
+  this.activePhoto += 1;
+  if(this.activePhoto === this.galleryPhoto.length) {
+    this.activePhoto = 0;
+  }
+  var nextPhoto = this.galleryPhoto[this.activePhoto].url;
+  location.hash = '#photo/' + nextPhoto;
+};
+
+Gallery.prototype._onDocumentKeyDown = function(evt) {
+  if(utilities.isDeactivationEvent(evt)) {
+    evt.preventDefault();
+    location.hash = '';
+  }
+};
+
+Gallery.prototype._onCloseClickHandler = function() {
+  location.hash = '';
+};
+
+Gallery.prototype.showPhoto = function(picture) {
+  this.setActivePhoto(picture);
+  this.galleryContainer.classList.remove('invisible');
+  this.previewContainer.addEventListener('click', this._onPhotoClick);
+  document.addEventListener('keydown', this._onDocumentKeyDown);
+  this.closePhoto.addEventListener('click', this._onCloseClickHandler);
+};
+
+Gallery.prototype.hidePhoto = function() {
+  this.galleryContainer.classList.add('invisible');
+  this.remove();
+};
+
+Gallery.prototype.remove = function() {
+  this.previewContainer.removeEventListener('click', this._onPhotoClick);
+  document.removeEventListener('keydown', this._onDocumentKeyDown);
+  this.closePhoto.removeEventListener('click', this._onCloseClickHandler);
+};
+
+Gallery.prototype.setActivePhoto = function(activPhoto) {
+  this.activePhoto = this.galleryPhotoSrc.indexOf(activPhoto);
+  this.previewContainer.src = this.galleryPhoto[this.activePhoto].url;
+  this.likeContainer.innerHTML = this.galleryPhoto[this.activePhoto].likes;
+  this.commentContainer.innerHTML = this.galleryPhoto[this.activePhoto].comments;
+};
+
+Gallery.prototype._onHashChange = function() {
+  var currentHash = location.hash;
+  var getPhotoUrl = /#photo\/(\S+)/.exec(currentHash);
+  if(getPhotoUrl) {
+    if(this.galleryPhoto.some(function(photo) {
+      return photo.url === getPhotoUrl[1];
+    })) {
+      this.showPhoto(getPhotoUrl[1]);
+    } else {
+      location.hash = '';
+    }
+  } else {
+    this.hidePhoto();
+    location.hash = '';
+  }
+};
+
 
 module.exports = new Gallery();
