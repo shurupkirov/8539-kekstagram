@@ -55,7 +55,7 @@ var Resizer = require('../resizer');
    * изображением.
    */
   function cleanupResizer() {
-    if (currentResizer) {
+    if(currentResizer) {
       currentResizer.remove();
       currentResizer = null;
     }
@@ -97,36 +97,36 @@ var Resizer = require('../resizer');
     inputonchange = event.target;
     switch(inputonchange.id) {
       case'resize-x' :
-        if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+        if(sideCropImage.value !== '' && sideCropImage.validity.valid) {
           leftPositionImage.max = currentResizer._image.naturalWidth - sideCropImage.value;
         } else {
           leftPositionImage.max = currentResizer._image.naturalWidth - 1;
         }
         break;
       case 'resize-y':
-        if (sideCropImage.value !== '' && sideCropImage.validity.valid) {
+        if(sideCropImage.value !== '' && sideCropImage.validity.valid) {
           topPositionImage.max = currentResizer._image.naturalHeight - sideCropImage.value;
         } else {
           topPositionImage.max = currentResizer._image.naturalHeight - 1;
         }
         break;
       case 'resize-size':
-        if (leftPositionImage.value !== '' && topPositionImage.value !== '') {
-          if (currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
+        if(leftPositionImage.value !== '' && topPositionImage.value !== '') {
+          if(currentResizer._image.naturalWidth - leftPositionImage.value > currentResizer._image.naturalHeight - topPositionImage.value) {
             sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
           } else {
             sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
           }
-        } else if (leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
+        } else if(leftPositionImage.value !== '' && currentResizer._image.naturalWidth - leftPositionImage.value < sideCropImageMax ) {
           sideCropImage.max = currentResizer._image.naturalWidth - leftPositionImage.value;
-        } else if (topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
+        } else if(topPositionImage.value !== '' && currentResizer._image.naturalHeight - topPositionImage < sideCropImageMax) {
           sideCropImage.max = currentResizer._image.naturalHeight - topPositionImage.value;
         } else {
           sideCropImage.max = sideCropImageMax;
         }
         break;
     }
-    if (!event.target.validity.valid) {
+    if(!event.target.validity.valid) {
       submitMessage.querySelector('.submit-message-container').innerHTML = resizeInputIsValid(event.target);
       submitMessage.classList.remove('invisible');
     } else {
@@ -145,7 +145,7 @@ var Resizer = require('../resizer');
    */
   function resizeInputIsValid(varnameinput) {
     var messageinput;
-    if (varnameinput.validity.valid) {
+    if(varnameinput.validity.valid) {
       messageinput = '';
     } else {
       messageinput = varnameinput.validationMessage;
@@ -159,20 +159,20 @@ var Resizer = require('../resizer');
    */
 
   function resizeFormIsValid() {
-    if (leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
+    if(leftPositionImage.value !== '' && topPositionImage.value !== '' && sideCropImage.value !== '' && leftPositionImage.validity.valid && topPositionImage.validity.valid && sideCropImage.validity.valid) {
       buttonCropSubmit.disabled = false; return true;
     } else {
-      if (leftPositionImage.value === '' && topPositionImage.value === '' && sideCropImage.value === '') {
+      if(leftPositionImage.value === '' && topPositionImage.value === '' && sideCropImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева", "Сверху", "Сторона" не могут быть пустыми';
       } else if(leftPositionImage.value === '' && topPositionImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сверху" не могут быть пустыми';
       } else if(leftPositionImage.value === '' && sideCropImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Слева" и "Сторона" не могут быть пустыми';
-      } else if (topPositionImage.value === '' && sideCropImage.value === '') {
+      } else if(topPositionImage.value === '' && sideCropImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поля "Сверху" и "Сторона" не могут быть пустыми';
-      } else if (leftPositionImage.value === '') {
+      } else if(leftPositionImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Слева" не может быть пустым';
-      } else if (topPositionImage.value === '') {
+      } else if(topPositionImage.value === '') {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сверху" не может быть пустым';
       } else {
         submitMessage.querySelector('.submit-message-container').innerHTML = 'Поле "Сторона" не может быть пустым';
@@ -220,7 +220,7 @@ var Resizer = require('../resizer');
   function showMessage(action, message) {
     var isError = false;
 
-    switch (action) {
+    switch(action) {
       case Action.UPLOADING:
         message = message || 'Кексограмим&hellip;';
         break;
@@ -250,10 +250,10 @@ var Resizer = require('../resizer');
    */
   var uploadFormChange = function(evt) {
     var element = evt.target;
-    if (element.id === 'upload-file') {
+    if(element.id === 'upload-file') {
       // Проверка типа загружаемого файла, тип должен быть изображением
       // одного из форматов: JPEG, PNG, GIF или SVG.
-      if (fileRegExp.test(element.files[0].type)) {
+      if(fileRegExp.test(element.files[0].type)) {
         var fileReader = new FileReader();
 
         showMessage(Action.UPLOADING);
@@ -267,7 +267,7 @@ var Resizer = require('../resizer');
 
           uploadForm.classList.add('invisible');
           resizeForm.classList.remove('invisible');
-          if (currentResizer._image.naturalWidth > currentResizer._image.naturalHeight) {
+          if(currentResizer._image.naturalWidth > currentResizer._image.naturalHeight) {
             sideCropImageMax = currentResizer._image.naturalHeight;
           } else {
             sideCropImageMax = currentResizer._image.naturalWidth;
@@ -310,7 +310,7 @@ var Resizer = require('../resizer');
   var resizeFormSubmit = function(evt) {
     evt.preventDefault();
 
-    if (resizeFormIsValid()) {
+    if(resizeFormIsValid()) {
       filterImage.src = currentResizer.exportImage().src;
 
       resizeForm.classList.add('invisible');
@@ -354,7 +354,7 @@ var Resizer = require('../resizer');
    * выбранному значению в форме.
    */
   var filterFormChange = function() {
-    if (!filterMap) {
+    if(!filterMap) {
       // Ленивая инициализация. Объект не создается до тех пор, пока
       // не понадобится прочитать его в первый раз, а после этого запоминается
       // навсегда.

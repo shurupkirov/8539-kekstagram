@@ -8,7 +8,6 @@ var Picture = require('./pictures/pictures');
 var utilities = require('./utilities');
 var filterPict = require('./pictures/picture-filter');
 
-//var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
 var filterBlock = document.querySelector('.filters');
 
 var picturesContainer = document.querySelector('.pictures');
@@ -102,18 +101,19 @@ var setFilterPicture = function(filter) {
 */
 var setFilterPictures = function() {
   var filters = filterBlock.querySelectorAll('.filters-radio');
-  for (var i = 0; i < filters.length; i++) {
-    var count = setCountFilterPictures(filters[i].id);
+  filters.forEach(function(elem) {
+    var count = setCountFilterPictures(elem.id);
     if(count <= 0) {
-      filters[i].classList.add('filter-disabled');
-      filters[i].setAttribute('disabled', 'disabled');
+      elem.classList.add('filter-disabled');
+      elem.setAttribute('disabled', 'disabled');
     }
-    filters[i].onclick = function() {
+    elem.onclick = function() {
       setFilterPicture(this.id);
       localStorage.setItem('lastPicturesFilter', this.id);
     };
-  }
+  });
 };
+
 /**
 * функция простановки sup с количеством элементов фильтра
 */

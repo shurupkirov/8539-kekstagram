@@ -8,10 +8,10 @@ var bType=typeof b;
   else if(aType=='boolean'&&a==false){
     resultString='Переданное GIF-изображение не анимировано';
   }
-  else if (aType=='number') {
+  else if(aType=='number') {
     resultString='Переданное SVG-изображение содержит ' + a + ' объектов и ' + (b*4) + ' атрибутов';
   }
-  else if (Array.isArray(a)&&!Array.isArray(b)) {
+  else if(Array.isArray(a)&&!Array.isArray(b)) {
     var sum = 0;
     for (var i = 0; i < a.length; i++) {
       sum=sum + a[i];

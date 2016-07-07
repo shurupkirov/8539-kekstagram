@@ -22,8 +22,8 @@ module.exports = {
   getDayFromBirthday: function() {
     var currentDate = new Date();
     currentDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentDate.getDate());
-    if (currentDate.getMonth() >= BIRTHDAY_DATE.getMonth()) {
-      if (currentDate.getDate() < BIRTHDAY_DATE.getDate()) {
+    if(currentDate.getMonth() >= BIRTHDAY_DATE.getMonth()) {
+      if(currentDate.getDate() < BIRTHDAY_DATE.getDate()) {
         BIRTHDAY_DATE.setFullYear(currentDate.getFullYear() - 1);
       } else {
         BIRTHDAY_DATE.setFullYear(currentDate.getFullYear());

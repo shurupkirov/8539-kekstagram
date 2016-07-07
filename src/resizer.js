@@ -273,7 +273,7 @@ Resizer.prototype = {
      * @param {Element} element
      */
   setElement: function(element) {
-    if (this._element === element) {
+    if(this._element === element) {
       return;
     }
 
@@ -310,15 +310,15 @@ Resizer.prototype = {
      * @param {number} side
      */
   setConstraint: function(x, y, side) {
-    if (typeof x !== 'undefined') {
+    if(typeof x !== 'undefined') {
       this._resizeConstraint.x = x;
     }
 
-    if (typeof y !== 'undefined') {
+    if(typeof y !== 'undefined') {
       this._resizeConstraint.y = y;
     }
 
-    if (typeof side !== 'undefined') {
+    if(typeof side !== 'undefined') {
       this._resizeConstraint.side = side;
     }
 

@@ -1,7 +1,5 @@
 'use strict';
 
-//var ACTIVE_FILTER_CLASSNAME = 'hotel-filter-active';
-//var gallery = require('../gallery');
 var getPictureElement = require('./get-pictures-element');
 var utilities = require('../utilities');
 
@@ -14,7 +12,7 @@ var Picture = function(data, container) {
 
 };
 Picture.prototype.onPictureClick = function(evt) {
-  if (evt.target.tagName === 'IMG') {
+  if(evt.target.tagName === 'IMG') {
     evt.preventDefault();
     location.hash = '#photo/' + this.data.url;
   }
